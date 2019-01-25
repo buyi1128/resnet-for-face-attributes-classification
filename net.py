@@ -1,9 +1,9 @@
 import torch.nn as nn
-import torch.functional as F
+import torch.nn.functional as F
 
 class Bottleneck(nn.Module):
     def __init__(self, in_planes, out_planes):
-        super(Bottleneck, self.__init__())
+        super(Bottleneck, self).__init__()
         self.conv1 = nn.Conv2d(in_planes, in_planes, 1, 1)
         self.conv2 = nn.Conv2d(in_planes, in_planes, 3, 1, 1)
         self.conv3 = nn.Conv2d(in_planes, out_planes, 1, 1)
@@ -13,22 +13,23 @@ class Bottleneck(nn.Module):
     def forward(self, x):
         out1 = self.conv1(x)
         out1 = self.bn1(out1)
-        out1 = nn.ReLU(out1, True)
+        out1 = F.relu(out1, True)
 
         out2 = self.conv2(out1)
         out2 = self.bn1(out2)
-        out2 = nn.ReLU(out2, True)
+        out2 = F.relu(out2, True)
 
         out3 = self.conv3(out2)
         out3 = self.bn2(out3)
-
+        print("neck out3:", out3.size())
+        print("neck x:", x.size())
         out3 = out3 + x
-        out3 = nn.ReLU(out3, True)
+        out3 = F.relu(out3, True)
         return out3
 
 class Resnet50(nn.Module):
     def __init__(self, classes):
-        super(Resnet50, self.__init__())
+        super(Resnet50, self).__init__()
         self.conv1 = nn.Conv2d(3, 64, 7, 2, 3, bias=False)
         self.bn1 = nn.BatchNorm2d(64)
         self.pool1 = nn.MaxPool2d(3, 2, 1)
@@ -46,10 +47,12 @@ class Resnet50(nn.Module):
         return nn.Sequential(*layers)
 
     def forward(self, x):
+        print("x:", x.size())
         out1 = self.conv1(x)
         out1 = self.bn1(out1)
-        out1 = nn.ReLU(out1, True)
+        out1 = F.relu(out1, inplace=True)
         out1 = self.pool1(out1)
+        print("out0: ", out1.size())
 
         out1 = self.layer1(out1)
         out2 = self.layer2(out1)
