@@ -2,6 +2,7 @@ import os
 import random
 import numpy as np
 import PIL.Image as Image
+import pickle
 
 import param
 
@@ -38,8 +39,10 @@ class CelebA:
         return meanPixel
 
     def getAnnoDict(self):
+        cacheFile = os.path.join("dataset/cache", "debug_annos.pkl")
+        if os.path.exists(cacheFile):
+            return pickle.load(open(cacheFile, "rb"))
         lines = open(self.annopath).readlines()
-        num = lines[0]
         self.attributes = lines[1].strip().split(" ")
         annos = {}
         if self.is_debug:
@@ -50,6 +53,8 @@ class CelebA:
             line = line.strip().split(" ")
             line = [x for x in line if x]
             annos[line[0]] = [int(x) for x in line[1::]]
+        with open(cacheFile, "wb") as fw:
+            pickle.dump(annos, fw)
         return annos
     
     def getImgPath(self, name):

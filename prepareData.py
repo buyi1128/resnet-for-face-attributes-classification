@@ -1,3 +1,5 @@
+import os
+import pickle
 import torch
 import PIL.Image as Image
 import numpy as np
@@ -14,18 +16,31 @@ class MyDataset(Data.Dataset):
         self.dataset = CelebA()
         self.annos = self.dataset.annos
         self.nameList = list(self.annos.keys())
+        self.imgList = self.getImgs()
         self.meanPixel = self.dataset.mean_pixel
         print("annos", self.annos)
         print("namelist", self.nameList)
         print("meanPixel", self.meanPixel)
+        
+    def getImgs(self):
+        cacheFile = os.path.join("dataset/cache", "debug_images.pkl")
+        if os.path.exists(cacheFile):
+            return pickle.load(open(cacheFile, "r"))
+        imgList = []
+        for name in self.nameList:
+            imgfile = self.dataset.getImgPath(name)
+            img = Image.open(imgfile)
+            imgList.append(img)
+        with open(cacheFile, "wb") as fw:
+            pickle.dump(imgList, fw)
+        return imgList
         
        
     def __len__(self):
         return len(self.nameList)
     
     def __getitem__(self, index):
-        imgfile = self.dataset.getImgPath(self.nameList[index])
-        img = Image.open(imgfile)
+        img = self.imgList[index]
         img = img.resize((224, 224), Image.ANTIALIAS)
         img = np.array(img, dtype=np.float32)
         if len(img.shape) == 2:
