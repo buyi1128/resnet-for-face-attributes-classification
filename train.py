@@ -1,10 +1,13 @@
 import torch
+import torch.nn as nn
 import torch.utils.data as Data
 import torch.optim as optim
 
 from prepareData import MyDataset
 from net import Resnet50
 import param as param
+
+print(torch.__version__)
 
 
 traindata = MyDataset()
@@ -16,15 +19,17 @@ data_loader = Data.DataLoader(
 )
 
 net = Resnet50(param.num_class)
-optimizer = optim.SGD(net.parameters(), lr=param.lr)  # optimize all cnn parameters
-criterion = torch.nn.CrossEntropyLoss()
+optimizer = optim.SGD(net.parameters(), lr=param.lr, momentum=0.9)  # optimize all cnn parameters
+criterion = nn.CrossEntropyLoss()
 
 for epoc in range(param.epoch):
     sumLoss = 0
     for step, (input, label) in enumerate(data_loader):
         optimizer.zero_grad()
         output = net.forward(input)
-        loss = criterion(output, label)
+        print("output: ", output.size())
+        print("label: ", label.size())
+        loss = criterion(output, label.long())
         loss.backward()
         optimizer.step()
         sumLoss += loss.item()

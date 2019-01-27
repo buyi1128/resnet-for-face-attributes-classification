@@ -25,7 +25,7 @@ class MyDataset(Data.Dataset):
     def getImgs(self):
         cacheFile = os.path.join("dataset/cache", "debug_images.pkl")
         if os.path.exists(cacheFile):
-            return pickle.load(open(cacheFile, "r"))
+            return pickle.load(open(cacheFile, "rb"))
         imgList = []
         for name in self.nameList:
             imgfile = self.dataset.getImgPath(name)
