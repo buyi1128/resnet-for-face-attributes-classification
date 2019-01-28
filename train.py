@@ -60,7 +60,7 @@ for epoc in range(1, param.epoch):
         else:
             sumLoss += loss.item()
     trainLoss.append(sumLoss/traindata.__len__())
-    print("train epoc %d  sumloss:%0.03f" % (epoc, sumLoss/traindata.__len__()))
+    print("train epoc %d  sumloss:%0.05f" % (epoc, sumLoss/traindata.__len__()))
     if epoc % param.val_step == 0:
         valLoss = 0
         result = [0 for _ in range(40)]

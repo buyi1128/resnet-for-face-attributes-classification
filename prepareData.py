@@ -17,34 +17,20 @@ class MyDataset(Data.Dataset):
         self.dataset = CelebA(self.type)
         self.annos = self.dataset.annos
         self.nameList = list(self.annos.keys())
-        self.imgList = self.getImgs()
         self.meanPixel = self.dataset.mean_pixel
         # print("annos", self.annos)
         # print("namelist", self.nameList)
         # print("meanPixel", self.meanPixel)
-        
-    def getImgs(self):
-        cacheFile = os.path.join("dataset/cache", self.type + "_images.pkl")
-        if os.path.exists(cacheFile):
-            return joblib.load(open(cacheFile, "rb"))
-        imgList = []
-        for name in self.nameList:
-            imgfile = self.dataset.getImgPath(name)
-            img = Image.open(imgfile)
-            img = img.resize((224, 224), Image.ANTIALIAS)
-            imgarray = np.array(img, dtype=np.float32)
-            img.close()
-            imgList.append(imgarray)
-        with open(cacheFile, "wb") as fw:
-            joblib.dump(imgList, fw)
-        return imgList
-        
-       
+
     def __len__(self):
         return len(self.nameList)
     
     def __getitem__(self, index):
-        img = self.imgList[index]
+        imgname = self.nameList[index]
+        imgfile = self.dataset.getImgPath(imgname)
+        img = Image.open(imgfile)
+        img = img.resize((224, 224), Image.ANTIALIAS)
+        img = np.array(img, dtype=np.float32)
         if len(img.shape) == 2:
             img = np.array([img, img, img])
         img[:, :, 0] = img[:, :, 0] - self.meanPixel[0]
