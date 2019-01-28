@@ -63,26 +63,28 @@ class Resnet50(nn.Module):
         return nn.Sequential(*layers)
 
     def forward(self, x):
-        print("x:", x.size())
+
         out1 = self.conv1(x)
         out1 = self.bn1(out1)
         out1 = F.relu(out1, inplace=True)
         out1 = self.pool1(out1)
-        print("out0: ", out1.size())
 
         out1 = self.layer1(out1)
-        print("layer1:", out1.size())
         out2 = self.layer2(out1)
-        print("layer2: ", out2.size())
         out3 = self.layer3(out2)
-        print("layer3: ", out3.size())
         out4 = self.layer4(out3)
-        print("layer4: ", out4.size())
 
         out = self.avgpool(out4)
         out = out.view(out.size(0), -1)
         out = self.fc(out)
-        print("fc: ", out.size())
+
+        # print("x:", x.size())
+        # print("out0: ", out1.size())
+        # print("layer1:", out1.size())
+        # print("layer2: ", out2.size())
+        # print("layer3: ", out3.size())
+        # print("layer4: ", out4.size())
+        # print("fc: ", out.size())
         return out
 
 
