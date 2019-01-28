@@ -40,7 +40,7 @@ class CelebA:
 
     def getAnnoDict(self):
         if self.type == "train":
-            filename = "train_10w.pkl"
+            filename = "train_16w.pkl"
         elif self.type == "validation":
             filename = "val_2w.pkl"
         else:
@@ -52,11 +52,11 @@ class CelebA:
         self.attributes = lines[1].strip().split(" ")
         annos = {}
         if self.type == "train":
-            lines = lines[2:100002]
+            lines = lines[2:160002]
         elif self.type == "validation":
-            lines = lines[100003:120003]
+            lines = lines[160002:180002]
         else:
-            lines = lines[140000:160000]
+            lines = lines[180002::]
         for line in lines:
             line = line.strip().split(" ")
             line = [x for x in line if x]

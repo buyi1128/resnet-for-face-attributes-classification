@@ -24,8 +24,8 @@ test_loader = Data.DataLoader(
     num_workers=0,              # 多线程来读数据
 )
 print("testdata:", testdata.__len__())
-modelfile = "model/resnet50_2w_epoc_30.pkl"
 net = Resnet50(param.num_class)
+modelfile = "model/resnet50_16w_epoc_10.pkl"
 net.load_state_dict(torch.load(modelfile))
 
 criterion = nn.MSELoss()
@@ -35,7 +35,7 @@ if param.is_cuda:
     criterion.cuda()
 
 testLoss = 0
-result = [0 for _ in range(40)]
+result = [0 for _ in range(param.num_class)]
 for t, (x, y) in enumerate(test_loader):
     if param.is_cuda:
         x = x.cuda()
@@ -51,9 +51,12 @@ for t, (x, y) in enumerate(test_loader):
 print("******************")
 print("test loss: %0.03f}" % (testLoss))
 print("result:", result)
+avg_rate = 0
 for k in range(len(attributes)):
     right_rate = float(result[k] / testdata.__len__())
     print(attributes[k] + " right rate is %0.03f" % right_rate)
-
+    avg_rate += right_rate
+avg_rate = float(avg_rate / param.num_class)
+print("avarage right rate is %0.03f" % avg_rate)
 
 
